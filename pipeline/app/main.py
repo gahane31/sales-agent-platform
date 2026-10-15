@@ -1,4 +1,4 @@
-"""Sales workspace. The rep pages stay free of scoring jargon."""
+"""AI sales intelligence platform. The rep pages stay free of scoring jargon."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ WORKSPACE = ["Accounts", "System"]
 
 
 def main() -> None:
-    st.set_page_config(page_title="Sales workspace", layout="wide")
+    st.set_page_config(page_title="AI sales intelligence platform", layout="wide")
     st.markdown(
         """
         <style>

@@ -38,7 +38,7 @@ def require_password() -> None:
         st.stop()
     if st.session_state.get("authenticated"):
         return
-    st.title("Sales workspace")
+    st.title("AI sales intelligence platform")
     entered = st.text_input("Password", type="password")
     if st.button("Continue"):
         if entered == configured:

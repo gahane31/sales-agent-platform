@@ -1,8 +1,9 @@
 -- SCRIPT: etl/12_enrich_account_domains.sql
 -- PURPOSE: fill country, business type, company name, and industry when they are still null.
 -- DEPENDS ON: setup/04_icp_config.sql, etl/04_scan_ssl.sql, etl/11_signals.sql
--- RE-RUNNABLE: yes — fill-if-null. A non-null value is never replaced.
+-- RE-RUNNABLE: yes — a page title or certificate name is kept only when that page or certificate belongs to the account.
 -- WHY: Fit needs an industry and a business type. The model is only for the names this pass cannot see.
+-- A shared address often lists many domains. The page title and the certificate belong to the host that was served, not to every domain on the reverse-DNS list.
 --
 -- Domain-label rule: a label matches a keyword when they are equal (case-insensitive), or when the
 -- keyword is at least 4 characters and the label starts with it. False-positive risk: "care" matches
@@ -68,6 +69,21 @@ where d.business_type is null
   and not d.is_infra
   and coalesce(d.scan_count, 0) > 0;
 
+-- Drop names and title-based industries that came from another site's page, then fill them again below.
+update public.domains
+set
+  company_name = null,
+  enrich_source = nullif(trim(both ';' from regexp_replace(regexp_replace(coalesce(enrich_source, ''), 'company_name:(title|cert_org)', '', 'g'), ';{2,}', ';', 'g')), '')
+where not is_infra
+  and coalesce(enrich_source, '') not like '%company_name:llm%'
+  and (enrich_source like '%company_name:title%' or enrich_source like '%company_name:cert_org%');
+
+update public.domains
+set
+  industry = null,
+  enrich_source = nullif(trim(both ';' from regexp_replace(regexp_replace(coalesce(enrich_source, ''), 'industry:title_keyword', '', 'g'), ';{2,}', ';', 'g')), '')
+where enrich_source like '%industry:title_keyword%';
+
 update public.domains d
 set
   company_name = src.subject_org,
@@ -89,6 +105,7 @@ from (
     from public.v_exposed_scans e
     join public.scan_ssl s on s.scan_id = e.scan_id
     where nullif(btrim(s.subject_org), '') is not null
+      and public.registrable_domain(s.subject_cn) = e.account_domain
       and not exists (
         select 1
         from public.generic_cert_orgs g
@@ -130,12 +147,15 @@ from (
         ),
         '^(\s*(home\s*(::|\||\-)|::)\s*)+', '', 'i'
       )
-    ), 200) as cleaned
+    , E' \t\r\n'), 200) as cleaned
   from public.v_exposed_scans e
   join public.scan_http h on h.scan_id = e.scan_id
-  where nullif(btrim(h.title), '') is not null
+  where nullif(btrim(h.title, E' \t\r\n'), '') is not null
+    and public.registrable_domain(h.host) = e.account_domain
     and h.title !~* 'just a moment|attention required|403 forbidden|index of|apache2|moved permanently|service unavailable|could not be satisfied'
-    and length(btrim(h.title)) between 4 and 80
+    and btrim(h.title, E' \t\r\n') !~* '^(404|302 found|400 bad request|401 unauthorized|403 forbidden|503 |not found|one moment|just a moment|document moved|account suspended|cpanel|default index|nginx!|apache http server test|invalid url|invalid dynamic link|site under maintenance|page not found|error 404)'
+    and btrim(h.title, E' \t\r\n') !~* '^error$'
+    and length(btrim(h.title, E' \t\r\n')) between 4 and 80
   order by e.account_domain,
     case
       when length(btrim(h.title)) <= 8 then 1
@@ -165,8 +185,8 @@ where d.domain = src.account_domain
   )
   and src.cleaned is not null
   and length(src.cleaned) >= 4
-  and src.cleaned !~* '^(home|index of|apache2 default page|403 forbidden|just a moment|attention required|test page)$'
-  and src.cleaned !~* 'just a moment|attention required|403 forbidden|index of /|apache2 default';
+  and src.cleaned !~* '^(home|index of|apache2 default page|403 forbidden|just a moment|attention required|test page|nginx!|404 not found|302 found|400 bad request|401 unauthorized|not found|one moment, please...|document moved|account suspended|cpanel login|default index page|error)$'
+  and src.cleaned !~* 'just a moment|attention required|403 forbidden|index of /|apache2 default|nginx';
 
 update public.domains d
 set
@@ -211,7 +231,10 @@ from (
       join public.scan_http h on h.scan_id = e.scan_id
       join public.domains d3 on d3.domain = e.account_domain
       where d3.industry is null
-        and nullif(btrim(h.title), '') is not null
+        and nullif(btrim(h.title, E' \t\r\n'), '') is not null
+        and public.registrable_domain(h.host) = e.account_domain
+        and btrim(h.title, E' \t\r\n') !~* '^(404|302 found|400 bad request|401 unauthorized|403 forbidden|503 |not found|one moment|just a moment|document moved|account suspended|cpanel|default index|nginx!|apache http server test|invalid url|invalid dynamic link|site under maintenance|page not found|error 404)'
+        and btrim(h.title, E' \t\r\n') !~* '^error$'
       order by e.account_domain, length(h.title) desc
     ) titles
     join public.industry_keywords k

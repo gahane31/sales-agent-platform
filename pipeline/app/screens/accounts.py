@@ -19,6 +19,19 @@ from pipeline.db.sql_statements import (
 from pipeline.db.workflow import WORKFLOW_STATUSES
 
 
+def _opened_row(event) -> int | None:
+    """The checkbox selects a row. A click on the logo or the name selects that cell."""
+    selection = getattr(event, "selection", None)
+    selected_rows = list(getattr(selection, "rows", []) or [])
+    if selected_rows:
+        return selected_rows[0]
+    for cell in getattr(selection, "cells", []) or []:
+        row_number, column_name = cell[0], cell[1]
+        if column_name in {"Logo", "Name"}:
+            return row_number
+    return None
+
+
 def render() -> None:
     st.title("Accounts")
     database_connection = cached_read_only_connection()
@@ -61,16 +74,16 @@ def render() -> None:
         hide_index=True,
         width="stretch",
         on_select="rerun",
-        selection_mode="single-row",
+        selection_mode=["single-row", "single-cell"],
         column_config={
             "Logo": st.column_config.ImageColumn("Logo"),
             "Score": st.column_config.ProgressColumn("Score", min_value=0, max_value=100),
         },
         key=f"accounts_table_{st.session_state.get('accounts_table_key', 0)}",
     )
-    selected = list(getattr(getattr(event, "selection", None), "rows", []) or [])
-    if selected:
-        chosen = rows[selected[0]]
+    selected = _opened_row(event)
+    if selected is not None:
+        chosen = rows[selected]
         st.session_state["account"] = chosen["account_domain"]
         st.session_state["open_account"] = True
         st.session_state["accounts_table_key"] = st.session_state.get("accounts_table_key", 0) + 1

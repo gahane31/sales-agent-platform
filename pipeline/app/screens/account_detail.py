@@ -346,7 +346,7 @@ def render() -> None:
             personas = [item for item in brief.get("target_personas") or [] if isinstance(item, dict)]
             company = _text(brief.get("company_name")) or row.get("display_name")
             st.markdown("**Outreach**")
-            st.caption(f"{company} · Sales workspace")
+            st.caption(f"{company} · AI sales intelligence platform")
             st.write("Prepare a relevant first conversation using the company overview and the security findings.")
             if brief.get("review_required"):
                 st.caption("Draft")
