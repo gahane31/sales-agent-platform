@@ -1,0 +1,147 @@
+{
+  "id": "priority_bands",
+  "coverage": "Each finding sits on a priority line: 69 is medium, 40 is medium, 39 is low, 1 is low, and a cloud host at 0 is informational. The summary should say this is a pediatric hospital.",
+  "input": {
+    "company_name": "Boundary Health",
+    "company_overview": {
+      "executive_summary": "Boundary Health is a pediatric hospital.",
+      "industry": "Hospital",
+      "products_and_services": [
+        "Pediatric care"
+      ]
+    },
+    "signals": [
+      {
+        "signal_type": "telnet_exposed",
+        "human_label": "Old remote login is reachable",
+        "human_meaning": "Telnet is exposed on this host.",
+        "description": "Telnet is exposed, on port 23 or in the banner extras.",
+        "product_angle": "Network security",
+        "need_weight": 69,
+        "timing_weight": 25,
+        "scan_count": 1,
+        "evidence": {
+          "ports": [
+            23
+          ],
+          "hosts": [
+            "edge.boundary.example"
+          ]
+        }
+      },
+      {
+        "signal_type": "self_signed",
+        "human_label": "Certificate the site signed itself",
+        "human_meaning": "The certificate is self-signed.",
+        "description": "The certificate is self-signed.",
+        "product_angle": "ASM / PKI hygiene",
+        "need_weight": 40,
+        "timing_weight": 20,
+        "scan_count": 1,
+        "evidence": {
+          "subject_cns": [
+            "boundary.example"
+          ]
+        }
+      },
+      {
+        "signal_type": "legacy_software",
+        "human_label": "A pile of old flaws",
+        "human_meaning": "Many old vulnerabilities are present, and none are on the known-exploited list.",
+        "description": "Fifteen or more old CVEs, none of them KEV, median year before 2016.",
+        "product_angle": "VM / patch discipline",
+        "need_weight": 39,
+        "timing_weight": 10,
+        "scan_count": 1,
+        "evidence": {
+          "cve_count": 18,
+          "median_year": 2014
+        }
+      },
+      {
+        "signal_type": "cert_expiring_30d",
+        "human_label": "Certificate expires soon",
+        "human_meaning": "When we scanned on {date}, this certificate had {N} days left.",
+        "description": "The certificate expires within 30 days of the scan and was not already expired.",
+        "product_angle": "Cert mgmt \u2014 timing hook",
+        "need_weight": 1,
+        "timing_weight": 10,
+        "scan_count": 1,
+        "evidence": {
+          "days_left": 3,
+          "scanned_on": "2026-10-01",
+          "subject_cns": [
+            "soon.boundary.example"
+          ]
+        }
+      },
+      {
+        "signal_type": "cloud_workload",
+        "human_label": "Runs in a public cloud",
+        "human_meaning": "This system sits in a public cloud. That alone is not a reason to call.",
+        "description": "The host is in a cloud provider. This does not raise Need or Timing by itself.",
+        "product_angle": "Cloud security (fit + angle only)",
+        "need_weight": 0,
+        "timing_weight": 0,
+        "scan_count": 2,
+        "evidence": {
+          "providers": [
+            "Amazon"
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": [
+      "pediatric"
+    ],
+    "labels": {
+      "telnet_exposed": {
+        "priority": "medium",
+        "must_include": [
+          "23",
+          "edge.boundary.example"
+        ],
+        "must_not_say": []
+      },
+      "self_signed": {
+        "priority": "medium",
+        "must_include": [
+          "boundary.example"
+        ],
+        "must_not_say": []
+      },
+      "legacy_software": {
+        "priority": "low",
+        "must_include": [
+          "2014",
+          "18"
+        ],
+        "must_not_say": [
+          "actively exploited"
+        ]
+      },
+      "cert_expiring_30d": {
+        "priority": "low",
+        "must_include": [
+          "3",
+          "soon.boundary.example"
+        ],
+        "must_not_say": [
+          "already expired"
+        ]
+      },
+      "cloud_workload": {
+        "priority": "informational",
+        "must_include": [
+          "Amazon"
+        ],
+        "must_not_say": [
+          "security problem",
+          "reason to contact"
+        ]
+      }
+    }
+  }
+}

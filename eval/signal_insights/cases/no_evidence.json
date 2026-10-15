@@ -1,0 +1,43 @@
+{
+  "id": "no_evidence",
+  "coverage": "The software is past support, but the scan did not record a product name. The card must not invent nginx, Apache, or Windows.",
+  "input": {
+    "company_name": "Plain Goods",
+    "company_overview": {
+      "executive_summary": "Plain Goods is a hardware retailer selling tools to local builders.",
+      "industry": "Hardware retail",
+      "products_and_services": [
+        "Tools"
+      ]
+    },
+    "signals": [
+      {
+        "signal_type": "eol_software",
+        "human_label": "Software the vendor no longer supports",
+        "human_meaning": "The software or operating system is past the vendor's support date.",
+        "description": "The host is tagged end-of-life software or operating system.",
+        "product_angle": "VM / upgrade path",
+        "need_weight": 70,
+        "timing_weight": 30,
+        "scan_count": 1,
+        "evidence": {}
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": [
+      "hardware"
+    ],
+    "labels": {
+      "eol_software": {
+        "priority": "high",
+        "must_include": [],
+        "must_not_say": [
+          "nginx",
+          "apache",
+          "windows"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "one_signal",
+  "coverage": "Only one signal was supplied. The reply must contain that one card and must not add a second finding.",
+  "input": {
+    "company_name": "Bright Mail",
+    "company_overview": {
+      "executive_summary": "Bright Mail is a courier company that delivers parcels for local shops.",
+      "industry": "Courier",
+      "products_and_services": ["Parcel delivery"]
+    },
+    "signals": [
+      {
+        "signal_type": "kev_exploited",
+        "human_label": "Known exploited flaw",
+        "human_meaning": "A known-exploited vulnerability is present.",
+        "description": "A known-exploited vulnerability is on a host tied to this domain.",
+        "product_angle": "Vulnerability mgmt / EDR — lead with active exploitation",
+        "need_weight": 100,
+        "timing_weight": 50,
+        "scan_count": 1,
+        "evidence": {"top_cves": [{"cve_id": "CVE-2023-44487"}], "hosts": ["mail.bright.example"]}
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": ["courier"],
+    "labels": {
+      "kev_exploited": {
+        "priority": "high",
+        "must_include": ["CVE-2023-44487", "mail.bright.example"],
+        "must_not_say": ["breached", "compromised"]
+      }
+    }
+  }
+}

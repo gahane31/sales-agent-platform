@@ -1,0 +1,83 @@
+{
+  "id": "admin_guest",
+  "coverage": "An administration port answers from the internet, and a file server allows a guest login. Say the ports and the anonymous login. Do not say the company was broken into or that files were stolen.",
+  "input": {
+    "company_name": "Harbor Works",
+    "company_overview": {
+      "executive_summary": "Harbor Works is a shipyard that repairs commercial vessels.",
+      "industry": "Shipyard",
+      "products_and_services": [
+        "Vessel repair"
+      ]
+    },
+    "signals": [
+      {
+        "signal_type": "exposed_admin",
+        "human_label": "Admin page open to the internet",
+        "human_meaning": "An administration port answers from the internet.",
+        "description": "An admin or devops port is reachable on the internet.",
+        "product_angle": "ASM / zero-trust / MFA",
+        "need_weight": 75,
+        "timing_weight": 40,
+        "scan_count": 2,
+        "evidence": {
+          "ports": [
+            22,
+            3389
+          ],
+          "hosts": [
+            "admin.harborworks.example"
+          ]
+        }
+      },
+      {
+        "signal_type": "ftp_anonymous",
+        "human_label": "File server allows a guest login",
+        "human_meaning": "FTP allows anonymous login.",
+        "description": "FTP allows anonymous login.",
+        "product_angle": "ASM",
+        "need_weight": 85,
+        "timing_weight": 35,
+        "scan_count": 1,
+        "evidence": {
+          "ports": [
+            21
+          ],
+          "login": "anonymous",
+          "hosts": [
+            "files.harborworks.example"
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": [
+      "shipyard"
+    ],
+    "labels": {
+      "exposed_admin": {
+        "priority": "high",
+        "must_include": [
+          "22",
+          "3389",
+          "admin.harborworks.example"
+        ],
+        "must_not_say": [
+          "breached",
+          "compromised"
+        ]
+      },
+      "ftp_anonymous": {
+        "priority": "high",
+        "must_include": [
+          "anonymous",
+          "files.harborworks.example"
+        ],
+        "must_not_say": [
+          "stolen"
+        ]
+      }
+    }
+  }
+}

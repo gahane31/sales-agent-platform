@@ -1,0 +1,49 @@
+{
+  "id": "host_cap",
+  "coverage": "Nine hosts were stored and the model is shown the first eight. The evidence line should say eight and name at most two. The ninth host must not appear.",
+  "input": {
+    "company_name": "Northwind Analytics",
+    "company_overview": {
+      "executive_summary": "Northwind Analytics is a freight brokerage that plans cargo movements for shippers.",
+      "industry": "Freight brokerage",
+      "products_and_services": ["Cargo planning"]
+    },
+    "signals": [
+      {
+        "signal_type": "no_waf_site",
+        "human_label": "Website with no protective filter",
+        "human_meaning": "A normal website responds, and we did not see a filter in front of it.",
+        "description": "A real HTTP 200 page has no detected WAF.",
+        "product_angle": "WAF (soft angle)",
+        "need_weight": 15,
+        "timing_weight": 5,
+        "scan_count": 8,
+        "evidence": {
+          "hosts": [
+            "alpha.fleet.example",
+            "bravo.fleet.example",
+            "charlie.fleet.example",
+            "delta.fleet.example",
+            "echo.fleet.example",
+            "foxtrot.fleet.example",
+            "golf.fleet.example",
+            "hotel.fleet.example",
+            "india.fleet.example"
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": ["freight"],
+    "section_must_not_say": ["india.fleet.example"],
+    "labels": {
+      "no_waf_site": {
+        "priority": "low",
+        "must_include": ["8 hosts"],
+        "must_not_say": ["india.fleet.example", "unprotected"],
+        "max_hosts": 2
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "two_certs",
+  "coverage": "One certificate is already expired and another, on a different host, expires in 11 days. Do not merge them, and do not write that a certificate expires in a negative number of days.",
+  "input": {
+    "company_name": "Cedar Records",
+    "company_overview": {
+      "executive_summary": "Cedar Records keeps county archives for public offices.",
+      "industry": "Records management",
+      "products_and_services": ["County archives"]
+    },
+    "signals": [
+      {
+        "signal_type": "expired_cert",
+        "human_label": "Expired certificate",
+        "human_meaning": "The site's certificate had already expired when we looked.",
+        "description": "The certificate was already expired at scan time.",
+        "product_angle": "Cert mgmt / ASM",
+        "need_weight": 55,
+        "timing_weight": 55,
+        "scan_count": 1,
+        "evidence": {"subject_cns": ["vpn.cedar.example"], "max_days_expired": 6}
+      },
+      {
+        "signal_type": "cert_expiring_30d",
+        "human_label": "Certificate expires soon",
+        "human_meaning": "When we scanned on {date}, this certificate had {N} days left.",
+        "description": "The certificate expires within 30 days of the scan and was not already expired.",
+        "product_angle": "Cert mgmt — timing hook",
+        "need_weight": 20,
+        "timing_weight": 70,
+        "scan_count": 1,
+        "evidence": {"days_left": 11, "scanned_on": "2026-10-01", "subject_cns": ["mail.cedar.example"]}
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": ["county archives"],
+    "section_must_not_say": ["expires in -"],
+    "labels": {
+      "expired_cert": {
+        "priority": "medium",
+        "must_include": ["vpn.cedar.example"],
+        "must_not_say": ["mail.cedar.example", "expires in -"]
+      },
+      "cert_expiring_30d": {
+        "priority": "low",
+        "must_include": ["mail.cedar.example", "11"],
+        "must_not_say": ["vpn.cedar.example", "already expired"]
+      }
+    }
+  }
+}

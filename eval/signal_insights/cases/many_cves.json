@@ -1,0 +1,86 @@
+{
+  "id": "many_cves",
+  "coverage": "One payroll company's host has six known-exploited flaws. The evidence line should keep every CVE, the host, and the address, and must not say the company was broken into.",
+  "input": {
+    "company_name": "Many Findings Ltd",
+    "company_overview": {
+      "executive_summary": "Many Findings Ltd is a payroll bureau for mid-size employers.",
+      "industry": "Payroll",
+      "products_and_services": [
+        "Payroll processing"
+      ]
+    },
+    "signals": [
+      {
+        "signal_type": "kev_exploited",
+        "human_label": "Hackers are actively exploiting a flaw in their systems",
+        "human_meaning": "Attackers are already using a known flaw on a system tied to this company.",
+        "description": "A known-exploited vulnerability is on a host tied to this domain.",
+        "product_angle": "Vulnerability mgmt / EDR \u2014 lead with active exploitation",
+        "need_weight": 100,
+        "timing_weight": 80,
+        "scan_count": 4,
+        "evidence": {
+          "hosts": [
+            "files.many.example"
+          ],
+          "ips": [
+            "203.0.113.10"
+          ],
+          "top_cves": [
+            {
+              "cve_id": "CVE-2024-12345",
+              "kev": true
+            },
+            {
+              "cve_id": "CVE-2023-44487",
+              "kev": true
+            },
+            {
+              "cve_id": "CVE-2021-44228",
+              "kev": true
+            },
+            {
+              "cve_id": "CVE-2020-1472",
+              "kev": true
+            },
+            {
+              "cve_id": "CVE-2019-0708",
+              "kev": true
+            },
+            {
+              "cve_id": "CVE-2017-0144",
+              "kev": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": [
+      "payroll"
+    ],
+    "labels": {
+      "kev_exploited": {
+        "priority": "high",
+        "must_include": [
+          "CVE-2024-12345",
+          "CVE-2023-44487",
+          "CVE-2021-44228",
+          "CVE-2020-1472",
+          "CVE-2019-0708",
+          "CVE-2017-0144",
+          "files.many.example",
+          "203.0.113.10"
+        ],
+        "must_not_say": [
+          "breached",
+          "compromised",
+          "under attack",
+          "hacked"
+        ]
+      }
+    }
+  }
+}

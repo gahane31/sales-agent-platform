@@ -1,0 +1,68 @@
+{
+  "id": "signal_order",
+  "coverage": "Three findings have different weights. The reply must list them from highest need to lowest: the known flaw, then the old encryption, then the website.",
+  "input": {
+    "company_name": "X School",
+    "company_overview": {
+      "executive_summary": "X School is a comprehensive school that teaches students through secondary level.",
+      "industry": "Education",
+      "products_and_services": ["Secondary education"]
+    },
+    "signals": [
+      {
+        "signal_type": "no_waf_site",
+        "human_label": "Website with no protective filter",
+        "human_meaning": "A normal website responds, and we did not see a filter in front of it.",
+        "description": "A real HTTP 200 page has no detected WAF.",
+        "product_angle": "WAF (soft angle)",
+        "need_weight": 15,
+        "timing_weight": 5,
+        "scan_count": 1,
+        "evidence": {"hosts": ["www.xschool.example"]}
+      },
+      {
+        "signal_type": "weak_tls",
+        "human_label": "Outdated encryption",
+        "human_meaning": "The site still allows old, weak encryption.",
+        "description": "TLS 1.0, 1.1, or SSL is still enabled.",
+        "product_angle": "Compliance / network sec",
+        "need_weight": 55,
+        "timing_weight": 25,
+        "scan_count": 1,
+        "evidence": {"endpoints": 1, "enabled_versions": ["TLSv1"]}
+      },
+      {
+        "signal_type": "kev_exploited",
+        "human_label": "Known exploited flaw",
+        "human_meaning": "A known-exploited vulnerability is present.",
+        "description": "A known-exploited vulnerability is on a host tied to this domain.",
+        "product_angle": "Vulnerability mgmt / EDR — lead with active exploitation",
+        "need_weight": 100,
+        "timing_weight": 40,
+        "scan_count": 1,
+        "evidence": {"top_cves": [{"cve_id": "CVE-2022-1388"}]}
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": ["school"],
+    "signal_order": ["kev_exploited", "weak_tls", "no_waf_site"],
+    "labels": {
+      "kev_exploited": {
+        "priority": "high",
+        "must_include": ["CVE-2022-1388"],
+        "must_not_say": ["breached"]
+      },
+      "weak_tls": {
+        "priority": "medium",
+        "must_include": ["TLSv1"],
+        "must_not_say": []
+      },
+      "no_waf_site": {
+        "priority": "low",
+        "must_include": ["www.xschool.example"],
+        "must_not_say": ["unprotected"]
+      }
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "id": "catalog_copy",
+  "coverage": "The catalog wording is already the plain product name. Copying it onto the card is a failure. The summary should still say this is a credit union.",
+  "input": {
+    "company_name": "Plain Angle Co",
+    "company_overview": {
+      "executive_summary": "Plain Angle Co is a credit union serving its members' savings accounts.",
+      "industry": "Credit union",
+      "products_and_services": [
+        "Savings accounts"
+      ]
+    },
+    "signals": [
+      {
+        "signal_type": "kev_exploited",
+        "human_label": "Known exploited flaw",
+        "human_meaning": "A known-exploited vulnerability is present.",
+        "description": "A known-exploited vulnerability is on a host tied to this domain.",
+        "product_angle": "Vulnerability Management",
+        "need_weight": 100,
+        "timing_weight": 40,
+        "scan_count": 1,
+        "evidence": {
+          "top_cves": [
+            {
+              "cve_id": "CVE-2022-1388"
+            }
+          ]
+        }
+      },
+      {
+        "signal_type": "cert_expiring_30d",
+        "human_label": "Certificate expires soon",
+        "human_meaning": "When we scanned on {date}, this certificate had {N} days left.",
+        "description": "The certificate expires within 30 days of the scan and was not already expired.",
+        "product_angle": "Certificate Lifecycle Management",
+        "need_weight": 20,
+        "timing_weight": 70,
+        "scan_count": 1,
+        "evidence": {
+          "days_left": 9,
+          "scanned_on": "2026-09-30",
+          "subject_cns": [
+            "vpn.plainangle.example"
+          ]
+        }
+      },
+      {
+        "signal_type": "eol_software",
+        "human_label": "Software the vendor no longer supports",
+        "human_meaning": "The software is past the vendor's support date.",
+        "description": "The host is tagged end-of-life software or operating system.",
+        "product_angle": "Endpoint Detection and Response",
+        "need_weight": 70,
+        "timing_weight": 20,
+        "scan_count": 1,
+        "evidence": {
+          "products": [
+            "OpenSSH 7.4"
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": [
+      "credit union"
+    ],
+    "labels": {
+      "kev_exploited": {
+        "priority": "high",
+        "must_include": [
+          "CVE-2022-1388"
+        ],
+        "must_not_say": [
+          "breached",
+          "compromised"
+        ]
+      },
+      "cert_expiring_30d": {
+        "priority": "low",
+        "must_include": [
+          "9",
+          "vpn.plainangle.example"
+        ],
+        "must_not_say": [
+          "already expired"
+        ]
+      },
+      "eol_software": {
+        "priority": "high",
+        "must_include": [
+          "OpenSSH 7.4"
+        ],
+        "must_not_say": []
+      }
+    }
+  }
+}

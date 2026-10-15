@@ -1,0 +1,68 @@
+{
+  "id": "low_only",
+  "coverage": "Every finding is low priority. The summary must not call these hygiene findings critical, urgent, or an emergency.",
+  "input": {
+    "company_name": "Harbor Clinic",
+    "company_overview": {
+      "executive_summary": "Harbor Clinic is a dental practice that books patient visits.",
+      "industry": "Dental care",
+      "products_and_services": ["Dental visits"]
+    },
+    "signals": [
+      {
+        "signal_type": "legacy_software",
+        "human_label": "Long-unpatched software",
+        "human_meaning": "Many old holes are still present. None of them are on the actively exploited list.",
+        "description": "Fifteen or more old CVEs, none of them KEV, median year before 2016.",
+        "product_angle": "VM / patch discipline",
+        "need_weight": 39,
+        "timing_weight": 10,
+        "scan_count": 1,
+        "evidence": {"cve_count": 18, "median_year": 2014}
+      },
+      {
+        "signal_type": "cert_expiring_30d",
+        "human_label": "Certificate expires soon",
+        "human_meaning": "When we scanned on {date}, this certificate had {N} days left.",
+        "description": "The certificate expires within 30 days of the scan and was not already expired.",
+        "product_angle": "Cert mgmt — timing hook",
+        "need_weight": 20,
+        "timing_weight": 40,
+        "scan_count": 1,
+        "evidence": {"days_left": 12, "scanned_on": "2026-10-01", "subject_cns": ["portal.harbor.example"]}
+      },
+      {
+        "signal_type": "no_waf_site",
+        "human_label": "Website with no protective filter",
+        "human_meaning": "A normal website responds, and we did not see a filter in front of it.",
+        "description": "A real HTTP 200 page has no detected WAF.",
+        "product_angle": "WAF (soft angle)",
+        "need_weight": 15,
+        "timing_weight": 5,
+        "scan_count": 1,
+        "evidence": {"hosts": ["www.harbor.example"]}
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": ["dental"],
+    "section_must_not_say": ["critical", "urgent", "emergency"],
+    "labels": {
+      "legacy_software": {
+        "priority": "low",
+        "must_include": ["2014", "18"],
+        "must_not_say": ["critical", "urgent", "actively exploited"]
+      },
+      "cert_expiring_30d": {
+        "priority": "low",
+        "must_include": ["12", "portal.harbor.example"],
+        "must_not_say": ["critical", "already expired"]
+      },
+      "no_waf_site": {
+        "priority": "low",
+        "must_include": ["www.harbor.example"],
+        "must_not_say": ["critical", "unprotected"]
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "open_database",
+  "coverage": "A county archive has a database reachable from the internet and a certificate that is already expired. Do not say the records were stolen, and do not describe the expired certificate as still expiring.",
+  "input": {
+    "company_name": "Cedar Records",
+    "company_overview": {
+      "executive_summary": "Cedar Records keeps county archives for public offices.",
+      "industry": "Records management",
+      "products_and_services": [
+        "County archives"
+      ]
+    },
+    "signals": [
+      {
+        "signal_type": "public_database",
+        "human_label": "Database open to the internet",
+        "human_meaning": "A database is reachable from the internet.",
+        "description": "A database port or database tag is reachable on the internet.",
+        "product_angle": "Attack-surface mgmt / DB security",
+        "need_weight": 90,
+        "timing_weight": 45,
+        "scan_count": 1,
+        "evidence": {
+          "ports": [
+            5432
+          ],
+          "products": [
+            "PostgreSQL"
+          ]
+        }
+      },
+      {
+        "signal_type": "expired_cert",
+        "human_label": "Expired certificate",
+        "human_meaning": "The site's certificate had already expired when we looked.",
+        "description": "The certificate was already expired at scan time.",
+        "product_angle": "Cert mgmt / ASM",
+        "need_weight": 55,
+        "timing_weight": 55,
+        "scan_count": 1,
+        "evidence": {
+          "subject_cns": [
+            "records.cedar.example"
+          ],
+          "days_left": -4
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": [
+      "county archives"
+    ],
+    "labels": {
+      "public_database": {
+        "priority": "high",
+        "must_include": [
+          "5432",
+          "PostgreSQL"
+        ],
+        "must_not_say": [
+          "stolen",
+          "leaked"
+        ]
+      },
+      "expired_cert": {
+        "priority": "medium",
+        "must_include": [
+          "records.cedar.example"
+        ],
+        "must_not_say": [
+          "expiring soon",
+          "expires in"
+        ]
+      }
+    }
+  }
+}

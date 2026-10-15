@@ -1,0 +1,57 @@
+{
+  "id": "wrong_title",
+  "coverage": "The overview says this is a bakery. A website title says Cancer Insurance. The summary should talk about the bakery, and it must not turn that title into an insurance business.",
+  "input": {
+    "company_name": "Northmill Bakery",
+    "company_overview": {
+      "executive_summary": "Northmill Bakery is a bakery that sells bread to local shops.",
+      "industry": "Bakery",
+      "products_and_services": [
+        "Bread"
+      ]
+    },
+    "signals": [
+      {
+        "signal_type": "no_waf_site",
+        "human_label": "Website with no protective filter",
+        "human_meaning": "A normal website responds, and we did not see a filter in front of it.",
+        "description": "A real HTTP 200 page has no detected WAF.",
+        "product_angle": "WAF (soft angle)",
+        "need_weight": 15,
+        "timing_weight": 5,
+        "scan_count": 1,
+        "evidence": {
+          "hosts": [
+            "www.northmill.example"
+          ],
+          "titles": [
+            "Cancer Insurance"
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": [
+      "bakery"
+    ],
+    "section_must_not_say": [
+      "insurance company",
+      "insurer",
+      "sells insurance",
+      "cancer cover"
+    ],
+    "labels": {
+      "no_waf_site": {
+        "priority": "low",
+        "must_include": [
+          "www.northmill.example"
+        ],
+        "must_not_say": [
+          "unprotected",
+          "no protection"
+        ]
+      }
+    }
+  }
+}

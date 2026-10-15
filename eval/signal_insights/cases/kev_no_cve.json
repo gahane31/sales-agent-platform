@@ -1,0 +1,35 @@
+{
+  "id": "kev_no_cve",
+  "coverage": "A known-exploited flaw is recorded, but no CVE id was stored. The card must not invent a CVE number to sound specific.",
+  "input": {
+    "company_name": "Plain Goods",
+    "company_overview": {
+      "executive_summary": "Plain Goods is a hardware retailer selling tools to local builders.",
+      "industry": "Hardware retail",
+      "products_and_services": ["Tools"]
+    },
+    "signals": [
+      {
+        "signal_type": "kev_exploited",
+        "human_label": "Hackers are actively exploiting a flaw in their systems",
+        "human_meaning": "Attackers are already using a known flaw on a system tied to this company.",
+        "description": "A known-exploited vulnerability is on a host tied to this domain.",
+        "product_angle": "Vulnerability mgmt / EDR — lead with active exploitation",
+        "need_weight": 100,
+        "timing_weight": 80,
+        "scan_count": 1,
+        "evidence": {"hosts": ["edge.plain.example"]}
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": ["hardware"],
+    "labels": {
+      "kev_exploited": {
+        "priority": "high",
+        "must_include": ["edge.plain.example"],
+        "must_not_say": ["breached", "compromised"]
+      }
+    }
+  }
+}

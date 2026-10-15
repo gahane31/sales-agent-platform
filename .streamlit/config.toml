@@ -1,0 +1,24 @@
+[theme]
+base = "dark"
+primaryColor = "#7C93FF"
+backgroundColor = "#0C0E12"
+secondaryBackgroundColor = "#171A20"
+textColor = "#F3F4F6"
+linkColor = "#9DB0FF"
+grayTextColor = "#9AA3B2"
+borderColor = "#2C313A"
+baseRadius = "medium"
+font = "sans serif"
+
+[theme.sidebar]
+backgroundColor = "#101318"
+secondaryBackgroundColor = "#171A20"
+borderColor = "#2C313A"
+
+[server]
+headless = true
+address = "0.0.0.0"
+port = 8501
+
+[client]
+toolbarMode = "minimal"

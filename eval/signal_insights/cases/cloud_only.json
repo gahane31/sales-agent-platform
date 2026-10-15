@@ -1,0 +1,52 @@
+{
+  "id": "cloud_only",
+  "coverage": "The only finding is a host in a public cloud. The summary can name the freight business. It must not treat that host as a security problem or a reason to contact the company.",
+  "input": {
+    "company_name": "Northwind Analytics",
+    "company_overview": {
+      "executive_summary": "Northwind Analytics is a freight brokerage that plans cargo movements for shippers.",
+      "industry": "Freight brokerage",
+      "products_and_services": [
+        "Cargo planning"
+      ]
+    },
+    "signals": [
+      {
+        "signal_type": "cloud_workload",
+        "human_label": "Runs in a public cloud",
+        "human_meaning": "This system sits in a public cloud. That alone is not a reason to call.",
+        "description": "The host is in a cloud provider. This does not raise Need or Timing by itself.",
+        "product_angle": "Cloud security (fit + angle only)",
+        "need_weight": 0,
+        "timing_weight": 0,
+        "scan_count": 3,
+        "evidence": {
+          "providers": [
+            "Amazon"
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": [
+      "freight"
+    ],
+    "section_must_not_say": [
+      "security problem",
+      "reason to contact"
+    ],
+    "labels": {
+      "cloud_workload": {
+        "priority": "informational",
+        "must_include": [
+          "Amazon"
+        ],
+        "must_not_say": [
+          "security problem",
+          "reason to contact"
+        ]
+      }
+    }
+  }
+}

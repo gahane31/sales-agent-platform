@@ -1,0 +1,39 @@
+{
+  "id": "no_cvss",
+  "coverage": "The evidence includes a CVSS score and an EPSS score. Those numbers stay out of the card and the summary.",
+  "input": {
+    "company_name": "Many Findings Ltd",
+    "company_overview": {
+      "executive_summary": "Many Findings Ltd is a payroll bureau for mid-size employers.",
+      "industry": "Payroll",
+      "products_and_services": ["Payroll processing"]
+    },
+    "signals": [
+      {
+        "signal_type": "kev_exploited",
+        "human_label": "Known exploited flaw",
+        "human_meaning": "A known-exploited vulnerability is present.",
+        "description": "A known-exploited vulnerability is on a host tied to this domain.",
+        "product_angle": "Vulnerability mgmt / EDR — lead with active exploitation",
+        "need_weight": 100,
+        "timing_weight": 60,
+        "scan_count": 1,
+        "evidence": {
+          "top_cves": [{"cve_id": "CVE-2021-44228", "cvss": 9.8, "epss": 0.975}],
+          "hosts": ["files.many.example"]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_mention": ["payroll"],
+    "section_must_not_say": ["cvss", "epss", "9.8", "0.975"],
+    "labels": {
+      "kev_exploited": {
+        "priority": "high",
+        "must_include": ["CVE-2021-44228", "files.many.example"],
+        "must_not_say": ["cvss", "epss", "9.8", "0.975", "breached"]
+      }
+    }
+  }
+}

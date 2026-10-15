@@ -1,0 +1,52 @@
+{
+  "id": "no_overview",
+  "coverage": "There is no company overview. The name is Summit National Bank. Repeating that name is fine. Deciding that the company is in banking is not.",
+  "input": {
+    "company_name": "Summit National Bank",
+    "company_overview": {},
+    "signals": [
+      {
+        "signal_type": "kev_exploited",
+        "human_label": "Known exploited flaw",
+        "human_meaning": "A known-exploited vulnerability is present.",
+        "description": "A known-exploited vulnerability is on a host tied to this domain.",
+        "product_angle": "Vulnerability mgmt / EDR \u2014 lead with active exploitation",
+        "need_weight": 100,
+        "timing_weight": 40,
+        "scan_count": 1,
+        "evidence": {
+          "top_cves": [
+            {
+              "cve_id": "CVE-2023-44487"
+            }
+          ],
+          "hosts": [
+            "mail.summit.example"
+          ]
+        }
+      }
+    ]
+  },
+  "checks": {
+    "section_must_not_say": [
+      "banking",
+      "lender",
+      "deposits",
+      "financial institution",
+      "as a bank"
+    ],
+    "labels": {
+      "kev_exploited": {
+        "priority": "high",
+        "must_include": [
+          "CVE-2023-44487",
+          "mail.summit.example"
+        ],
+        "must_not_say": [
+          "breached",
+          "compromised"
+        ]
+      }
+    }
+  }
+}
