@@ -1,21 +1,15 @@
 # How I built this
 
-I used Cursor. I would say what I wanted, usually after we looked at what the code already did. The agent made the change, and then I checked the database. I looked at counts: how many companies are on the list, how many share a name, and whether the overviews we already had were still there after a rescore. If something was wrong, we wrote down the number and why, and changed the rule. We did not edit the data just to make the check pass.
+I started by trying to understand how a sales team picks which companies to look at, and what this scan data can actually say. I did not want to hand the raw scans to a model and ask it for a customer list. The early work was looking through the fields. I used Cursor for that exploration as well as for the code. From the scans we can derive things ourselves: a certificate that is expiring, a known exploited vulnerability, old software, weak encryption, and services left open on the internet. The useful part was turning those observations into signals we can sort companies by.
 
-## Where it helped
+Once that was clear, the scoring stayed in rules. If a known exploited vulnerability is present, its priority comes from the weight we set and from the evidence, not from asking the model how serious it is. The company list is ordered by that calculated score. The model is there for the part a salesperson has to read: a short description of the company, an explanation of the findings we already have, and a first note for outreach.
 
-Most of the time saved was the writing. The scan tables, the company list, saving each model call, and the checks for signal insights. Once I knew what those should do, asking for the code was faster than typing it.
+Those are three separate jobs, not one agent that does all of it. The overview says what the company does. The signals job connects those findings to that overview. It is not allowed to add a finding, a host, or a claim the scan did not support. Outreach is written only after the overview exists, from the overview and the findings. Splitting them made each output easier to check and change.
 
-What helped more than the typing was counting before changing anything. A lot of companies on the list had the same name. We did not start by restyling the screen. We counted. On the priority list, about 240 companies shared a display name, and 39 of them had one pediatric clinic's page title, all from a single scan. That is where the rule came from: use a page title or a certificate only when it belongs to that domain.
+I also wanted the cost and the checks on a page, not only in a log. The system page shows what the jobs and the eval runs spent, and it compares the latest signal-insights run with the previous one, including how many checks passed. A prompt change can improve one sentence and make another worse. The comparison is there so that is not judged from a few replies I happened to open.
 
-## Where it cost more
+The line I kept coming back to is that the data and the wording are different. A vulnerability on a company's address is not the same as saying the company was breached. Not seeing a firewall is not the same as saying there is no firewall. The model will overstate that if the prompt leaves room for it. The eval is there so the text stays tied to the evidence we sent in.
 
-The agent did what I asked, including when the ask was too short.
+Cursor saved the most time after those rules were clear: the scan tables, the list, saving each model call, and the eval run. It cost more when the instruction was shorter than the rule. "Use the page title as the company name" copied one page onto other domains that only shared an address. Narrowing that rule, and running the names again, took longer than the first version.
 
-"Use the page title as the company name" is fine when the page is that company's page. It is wrong when one address lists many unrelated domains, because the title gets copied onto all of them. That is the pediatric clinic case. The first cleanup was also incomplete. A title like "Welcome to nginx!" did not look like a junk name until after "Welcome to " was stripped, so a few names were still "nginx!" and we had to run it again. The useful fix was the narrower rule, then clear the bad names and fill them again. Another exception on top would have missed the next title.
-
-The other case was the pipeline. Earlier we added tables, checks, and a saved-list screen because each one sounded useful at the time. Later, nothing in the app read several of them. The saved list stored a filter and did not bring those companies back. Taking that out took longer than adding it. I would put the limit in the request now: if the current app does not read it, do not add it.
-
-## One weakness
-
-The name rule does not apply to the findings yet. A scan on a shared address can still attach another site's exposures to every domain on that address. The company name can be right, and the score can still be treating someone else's findings as this company's. That is what I would flag before someone trusts the order of the list.
+The weakness I would flag is the same kind of mistake, still in the score. We stopped copying that page title onto every domain. A scan on a shared address can still attach another site's findings to those domains, and the score treats them as that company's. The name can look right while the order of the list is still off. Wider eval coverage would help the wording. It would not fix that.
